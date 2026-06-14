@@ -1,0 +1,9 @@
+Turn 1: Drone 1 moved from start to junction
+Turn 1: Drone 2 moved from start to junction
+Turn 2: Drone 1 moved from junction to path_a
+Turn 2: Drone 2 moved from junction to path_b
+Turn 2: Drone 3 moved from start to junction
+Turn 3: Drone 1 moved from path_a to goal
+Turn 3: Drone 2 moved from path_b to goal
+Turn 3: Drone 3 moved from junction to path_a
+Turn 4: Drone 3 moved from path_a to goal

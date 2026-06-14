@@ -1,0 +1,4 @@
+1- start and end must be able to hold number of drones..
+pip install webcolors to validate colos (rgb = webcolors.name_to_rgb("aqua"))
+start connection and end connection must be present
+validate the zone type
