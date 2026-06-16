@@ -162,9 +162,19 @@ class Path_finder:
                 stack.append((neighbor_name, new_path, new_visited))
             # print('path >>', path)
         # Sort by cost (cheapest first)
-        all_paths.sort(key=lambda p: self._path_cost(p))
+        paths_with_cost = {}
+        for path in all_paths:
+            paths_with_cost[tuple(path)] = self._path_cost(path)
+        min_cost = min(value for value in paths_with_cost.values())
+        with open('paths.txt', 'w') as f:
+            print(paths_with_cost, file=f)
+        best_paths = []
+        for key, value in paths_with_cost.items():
+            if value == min_cost:
+                best_paths.append(list(key))
+        # all_paths.sort(key=lambda p: (self._path_cost(p), len(p)))
         # print('all_paths >>', all_paths)
-        return all_paths
+        return best_paths
 
     def _path_cost(self, path: list[str]) -> int:
         """Calculate total cost of a path.

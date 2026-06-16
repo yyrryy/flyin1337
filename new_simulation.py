@@ -1,4 +1,5 @@
 from algorithm import Path_finder
+from rich import print
 class Drone:
     def __init__(self, drone_id: int, start_zone: str):
         self.id = drone_id
@@ -29,14 +30,15 @@ class Simulation:
             list(self.zones.values()),
             list(self.connections.values())
         )
-        all_paths = pathfinder.find_all_paths(
+        best_paths = pathfinder.find_all_paths(
             self.start_zone,
             self.end_zone,
             paths_needed=self.nb_drones
         )
-        if not all_paths:
-            raise ValueError("No path found")
-        best_paths = all_paths[:5]
+        # if not all_paths:
+        #     raise ValueError("No path found")
+        # best_paths = all_paths[:2]
+        # print('best_paths', best_paths)
         for i, drone in enumerate(self.drones):
             path = best_paths[i % len(best_paths)]
             drone.path = path[1:]
@@ -47,6 +49,9 @@ class Simulation:
             self.turn += 1
             self.process_turn()
         print(f"\nSimulation finished in {self.turn} turns")
+
+    def print_with_colors(self, movement):
+        pass
 
     def process_turn(self):
         # Reset connection usage for this turn
@@ -117,7 +122,8 @@ class Simulation:
         
         # STEP 3: Output
         if movements:
-            print(" ".join(movements))
+            for i in movements:
+
 
     def all_delivered(self):
         return all(d.status == "delivered" for d in self.drones)

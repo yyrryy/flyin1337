@@ -1,11 +1,11 @@
 run:
-	python3 main.py map.txt
+	uv run python3 main.py map.txt
 
 install:
-	pip install -r requirements.txt
+	uv sync
 
 debug:
-	python3 -m pdb main.py maps.txt
+	uv run python3 -m pdb main.py maps.txt
 
 clean:
 	rm -rf __pycache__ .mypy_cache .pytest_cache
