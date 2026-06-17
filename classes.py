@@ -82,10 +82,10 @@ class Zone():
                 if self.is_start or self.is_end:
                     self.max_drones = number_of_drones
         else:
-            if self.is_start:
-                raise Parsing_error(f"start zone must accept all drones, line: {l_dx}")
-            if self.is_end:
-                raise Parsing_error(f"end zone must accept all drones, line: {l_dx}")
+            # if self.is_start:
+            #     raise Parsing_error(f"start zone must accept all drones, line: {l_dx}")
+            # if self.is_end:
+            #     raise Parsing_error(f"end zone must accept all drones, line: {l_dx}")
             self.color = None
             self.zone_type = "normal"
             if self.is_start or self.is_end:

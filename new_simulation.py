@@ -1,4 +1,5 @@
 from algorithm import Path_finder
+import webcolors
 from rich import print
 class Drone:
     def __init__(self, drone_id: int, start_zone: str):
@@ -50,8 +51,45 @@ class Simulation:
             self.process_turn()
         print(f"\nSimulation finished in {self.turn} turns")
 
-    def print_with_colors(self, movement):
-        pass
+    def print_with_colors(self, movement: str) -> None:
+        def print_rainbow(text):
+            colors = ["red", "orange1", "yellow", "green", "blue", "indigo", "violet"]
+            colored_text = ""
+            for i, char in enumerate(text):
+                color = colors[i % len(colors)]
+                colored_text += f"[{color}]{char}[/]"
+            return colored_text
+        parts = movement.split('-')
+        if len(parts) == 2:
+            drone, zone = parts
+            zone_color = self.zones[zone]["color"]
+            if zone_color is None:
+                return movement
+            if zone_color == "rainbow":
+                return f"{drone}-{print_rainbow(zone)}"
+            hex_color = webcolors.name_to_hex(zone_color)
+            return (f"{drone}-[{hex_color}]{zone}[/]")
+        else:
+            drone, zone_from, zone_to = parts
+            zone_from_color = self.zones[zone_from]["color"]
+            zone_to_color = self.zones[zone_to]["color"]
+            
+            if zone_from_color is None:
+                output_of_zone_from = zone_from
+            elif zone_from_color == "rainbow":
+                output_of_zone_from = print_rainbow(zone_from)
+            else:
+                hex_color_from = webcolors.name_to_hex(zone_from_color)
+                output_of_zone_from = f'[{hex_color_from}]{zone_from}[/]'
+
+            if zone_to_color is None:
+                output_of_zone_to = zone_to
+            elif zone_to_color == "rainbow":
+                output_of_zone_to = print_rainbow(zone_to)
+            else:
+                hex_color_to = webcolors.name_to_hex(zone_to_color)
+                output_of_zone_to = f'[{hex_color_to}]{zone_to}[/]'
+            return (f"{drone}-{output_of_zone_from}-{output_of_zone_to}")
 
     def process_turn(self):
         # Reset connection usage for this turn
@@ -122,8 +160,14 @@ class Simulation:
         
         # STEP 3: Output
         if movements:
-            for i in movements:
 
+            # print(' '.join(movements))
+            colored_movements = [
+                self.print_with_colors(movement)
+                for movement in movements
+            ]
+            print(' '.join(colored_movements))
+            #     self.print_with_colors(i)
 
     def all_delivered(self):
         return all(d.status == "delivered" for d in self.drones)
