@@ -34,9 +34,9 @@ def main(filename: str) -> None:
     except Parsing_error as e:
         print(f"Parse Error: {e}", file=sys.stderr)
         sys.exit(1)
-    except (Exception, KeyboardInterrupt) as e:
-        print(f"Unexpected error {e}", file=sys.stderr)
-        sys.exit(1)
+    # except (Exception, KeyboardInterrupt) as e:
+    #     print(f"Unexpected error {e}", file=sys.stderr)
+    #     sys.exit(1)
 
 
 if __name__ == "__main__":

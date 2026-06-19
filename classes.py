@@ -78,11 +78,11 @@ class Zone():
                         raise Parsing_error(f"Duplicated meta data, line: {l_dx}")
                     try:
                         max_drones = int(val)
-                        if max_drones < 1:
-                            msg = f"No drones provided, line: {l_dx}"
-                            raise Parsing_error(msg)
                         if self.is_start or self.is_end:
                             self.max_drones = number_of_drones
+                        elif max_drones < 1:
+                            msg = f"No drones provided, line: {l_dx}"
+                            raise Parsing_error(msg)
                         else:
                             self.max_drones = max_drones
                     except ValueError:

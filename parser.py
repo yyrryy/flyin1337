@@ -29,30 +29,49 @@ class Parser():
                 break
         if not has_content:
             raise Parsing_error("file contains only comments or is empty")
+
         start_flag = False
         end_flag = False
         start_connection_flag = False
         end_connection_flag = False
         nb_drones_found = False
         for l_dx, line in enumerate(file_content, start=1):
-            stripped_line = line.strip()
-
+            raw_line = line.strip()
             # print('stripped_line 11', stripped_line)
             # Skip empty lines and comments
-            if not stripped_line or stripped_line.startswith("#"):
+            if not raw_line or raw_line.startswith("#"):
                 continue
-            # print('stripped_line', stripped_line)
-            # start hub pattern
-            # the start flag to  catch the start hub parsing
+
+            if '#' in raw_line:
+                # stripped_line = stripped_line.split('#', 1)[0]
+                stripped_line = ""
+                for c in raw_line:
+                    if c == '#':
+                        break
+                    stripped_line += c
+                stripped_line = stripped_line.strip()
+            else:
+                stripped_line = raw_line
             nb_drones_pattern = r'^nb_drones:\s+([-?\d.]+)?'
-            start_hub_pattern = r'^start_hub:\s+([\w-]+)\s+(-?\d+)\s+(-?\d+)'
-            start_hub_pattern += r'(?:\s+\[([^\]]*)\])?$'
-            end_hub_pattern = r'^end_hub:\s+([\w-]+)\s+(-?\d+)\s+'
-            end_hub_pattern += r'(-?\d+)(?:\s+\[([^\]]*)\])?$'
-            hub_pattern = r'^hub:\s+([\w-]+)\s+(-?\d+)\s+'
-            hub_pattern += r'(-?\d+)(?:\s+\[([^\]]*)\])?$'
-            connection_pattern = r'^connection:\s+([\w-]+)'
-            connection_pattern += r'(?:\s+\[([^\]]*)\])?$'
+            start_hub_pattern = (
+                r'^start_hub:\s+'
+                r'([^\s]+)\s+(-?\d+)\s+(-?\d+)'
+                r'(?:\s+\[([^\]]*)\])?$'
+            )
+            end_hub_pattern = (
+                r'^end_hub:\s+'
+                r'([^\s]+)\s+(-?\d+)\s+(-?\d+)'
+                r'(?:\s+\[([^\]]*)\])?$'
+            )
+            hub_pattern = (
+                r'^hub:\s+([^\s]+)\s+'
+                r'(-?\d+)\s+(-?\d+)'
+                r'(?:\s+\[([^\]]*)\])?$'
+            )
+            connection_pattern = (
+                r'^connection:\s+'
+                r'([^\s]+)(?:\s+\[([^\]]*)\])?$'
+            )
             nb_drones_match = re.match(nb_drones_pattern, stripped_line)
             start = re.match(start_hub_pattern, stripped_line)
             end = re.match(end_hub_pattern, stripped_line)
@@ -173,7 +192,17 @@ class Parser():
                 )
                 self.connections.append(cretaed_connections)
             else:
-                raise Parsing_error(f"Invalid format, line: {l_dx}")
+                expected = (
+                    "expected: \n"
+                    "nb_drones: (positive integer)\n"
+                    "start_hub: (name) (x) (y) [optional metadata]\n"
+                    "hub: (name) (x) (y) [optional metadata]\n"
+                    "end_hub: (name) (x) (y) [optional metadata]\n"
+                    "connection: (zone_from)-(zone_target)[optional metadata]\n"
+                    "Ordering is not important\n"
+                    "whilte spaces are allowed"
+                )
+                raise Parsing_error(f"Invalid format, line: {l_dx}, {expected}")
         if not start_flag:
             raise Parsing_error("start hub does not exist")
         if not end_flag:
