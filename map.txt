@@ -1,16 +1,28 @@
-# Easy Level 1: Simple linear path
+# CHALLENGER LEVEL: THE IMPOSSIBLE DREAM
+# WARNING: This map is designed to be extremely challenging and may not be solvable
+# by most algorithms. It's intended as a stress test and research challenge.
+# The goal is NOT to validate this map but to push algorithmic limits.
 
-nb_drones: 1
+Nb_drones: 5
 
-start_hub:   start7&         -0  5      
+# === LAYER 0: The Nightmare Begins ===
+start_hub: S 0 0 [color=green max_drones=0 zone=blocked]
 
+# Single-file entry gates (extreme bottleneck)
+end_hub: E 1 0 [color=red max_drones=1]
+hub: A 2 0 [color=red max_drones=1]
+hub: R1 2 0 [color=red max_drones=1]
+hub: R@ 2 0 [color=red max_drones=1]
+hub: F 2 0 [color=red max_drones=1]
+hub: G 2 0 [color=red max_drones=1]
+hub: B 3 0 [color=red max_drones=1 zone=restricted]
+hub: C 4 0 [color=red max_drones=1]
+hub: D 5 0 [color=red max_drones=1]
 
-hub: waypoint1 1 0  # [color=red]
-hub: waypoint2 2 0
-
-
-end_hub: goal 3 0 [color=red]
-
-connection: start7&-waypoint1
-connection: waypoint1-waypoint2
-connection: waypoint2-goal
+connection: S-A [max_link_capacity=5]
+connection: S-F [max_link_capacity=5]
+connection: A-B
+connection: F-B
+connection: B-C
+connection: C-D
+connection: D-E

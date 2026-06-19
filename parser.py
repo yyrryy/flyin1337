@@ -49,10 +49,10 @@ class Parser():
                     if c == '#':
                         break
                     stripped_line += c
-                stripped_line = stripped_line.strip()
+                stripped_line = stripped_line.strip().lower()
             else:
-                stripped_line = raw_line
-            nb_drones_pattern = r'^nb_drones:\s+([-?\d.]+)?'
+                stripped_line = raw_line.lower()
+            nb_drones_pattern = r'^nb_drones:\s+([-?\d.]+)?$'
             start_hub_pattern = (
                 r'^start_hub:\s+'
                 r'([^\s]+)\s+(-?\d+)\s+(-?\d+)'
@@ -157,6 +157,14 @@ class Parser():
                 except ValueError:
                     raise Parsing_error(f'{y} is not a valid coordination')
                 attributes = hub.group(4)
+                zone_exist = next(
+                    (
+                        z for z in self.zones if z.name == name
+                    ), None
+                )
+                if zone_exist:
+                    msg = f"Zone {name} already exists, line {l_dx}"
+                    raise Parsing_error(msg)
                 zone = Zone(name, False, False, x, y, attributes)
                 zone.set_data(l_dx, nbr_of_drones)
                 self.zones.append(zone)
@@ -200,7 +208,7 @@ class Parser():
                     "end_hub: (name) (x) (y) [optional metadata]\n"
                     "connection: (zone_from)-(zone_target)[optional metadata]\n"
                     "Ordering is not important\n"
-                    "whilte spaces are allowed"
+                    "white spaces are allowed"
                 )
                 raise Parsing_error(f"Invalid format, line: {l_dx}, {expected}")
         if not start_flag:

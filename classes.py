@@ -138,4 +138,4 @@ class Drone:
         self.path: list[str] = []
         self.status = "waiting"
         self.next_zone: str | None = None
-        self.current_connection: str | None = None
+        self.current_connection: tuple | None = None

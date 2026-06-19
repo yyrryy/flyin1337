@@ -102,6 +102,17 @@ class Simulation:
         # STEP 2: Collect and execute movements
         for drone in self.drones:
             if drone.status == "in_connection":
+                to_zone_instence = self.zones[drone.next_zone]
+                if drone.next_zone != self.end_zone:
+                    if (
+                        len(self.drones_in_zone[drone.next_zone])
+                        >= to_zone_instence["max_drones"]
+                    ):
+                        continue
+                conn_instance: dict | None = self.connections.get(drone.current_connection)
+                if conn_instance:
+                    print(drone.id, drone.current_connection, self.drones_in_conn[drone.current_connection], sep="")
+                    self.drones_in_conn[drone.current_connection] -= 1
                 # Arrive at destination (SILENT - no output)
                 self.drones_in_zone[drone.next_zone].append(drone.id)
                 drone.current_zone = drone.next_zone
@@ -142,16 +153,16 @@ class Simulation:
                 ):
                     continue  # Zone full, drone waits
             # ALL CHECKS PASSED - DRONE CAN MOVE
-            self.drones_in_conn[conn_key] += 1
             # Remove from current zone
             self.drones_in_zone[from_zone].remove(drone.id)
             # Handle different zone types
             if to_zone_instence["zone_type"] == "restricted":
                 # 2-turn movement
+                self.drones_in_conn[conn_key] += 1
                 drone.status = "in_connection"
                 drone.next_zone = to_zone
-                drone.current_connection = f"{from_zone}-{to_zone}"
-                movements.append(f"D{drone.id}-{drone.current_connection}")
+                drone.current_connection = conn_key
+                movements.append(f"D{drone.id}-{from_zone}-{to_zone}")
             else:
                 # Normal or priority - immediate arrival
                 self.drones_in_zone[to_zone].append(drone.id)
