@@ -1,1 +1,0 @@
-[{'from': 'start', 'to': 'junction', 'max_link_capacity': 1}, {'from': 'junction', 'to': 'path_a', 'max_link_capacity': 1}, {'from': 'path_a', 'to': 'junction', 'max_link_capacity': 1}, {'from': 'junction', 'to': 'path_b', 'max_link_capacity': 1}, {'from': 'path_a', 'to': 'goal', 'max_link_capacity': 1}, {'from': 'goal', 'to': 'path_b', 'max_link_capacity': 1}]

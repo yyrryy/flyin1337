@@ -1,2 +1,6 @@
 class Parsing_error(Exception):
     ...
+
+
+class Algo_error(Exception):
+    ...
