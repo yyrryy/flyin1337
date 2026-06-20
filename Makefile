@@ -1,11 +1,13 @@
+MAP?=map.txt
+
 run:
-	uv run python3 main.py map.txt
+	uv run python3 main.py $(MAP)
 
 install:
 	uv sync
 
 debug:
-	uv run python3 -m pdb main.py maps.txt
+	uv run python3 -m pdb main.py $(MAP)
 
 clean:
 	rm -rf __pycache__ .mypy_cache .pytest_cache

@@ -61,7 +61,7 @@ class Path_finder:
         min_cost = min(value for value in paths_with_cost.values())
         with open('paths.txt', 'w') as f:
             print(paths_with_cost, file=f)
-        tolerance = 2
+        tolerance = 1
         max_allowed_cost = min_cost + tolerance
         best_paths = []
         for key, value in paths_with_cost.items():

@@ -37,7 +37,7 @@ class Zone():
                 attr_pattern = re.compile(r'^([a-z_]+)=([^=\s]+)$')
                 valid_attribute = attr_pattern.match(i)
                 if not valid_attribute:
-                    raise Parsing_error(f"Not a valid attribute, line {l_dx}")
+                    raise Parsing_error(f"Not a valid metadata, line {l_dx}")
                 key, val = valid_attribute.group(1), valid_attribute.group(2)
                 if key == "color":
                     if color_catched:
