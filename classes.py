@@ -4,6 +4,25 @@ import webcolors
 
 
 class Zone():
+    """Represents a zone in the drone network.
+
+    A zone is a node in the graph with coordinates, type, color, and capacity.
+    Zones can be start, end, or regular hubs with different movement costs.
+
+    Attributes:
+        name (str): Unique identifier for the zone.
+        is_start (bool): True if this is the start zone.
+        is_end (bool): True if this is the end zone.
+        x (int): X-coordinate of the zone.
+        y (int): Y-coordinate of the zone.
+        attributes (str): Raw metadata string from the map file.
+        zone_type (str): Type of zone (normal, restricted, priority, blocked).
+        color (str | None): Visual color for terminal output.
+        cost (int): Movement cost in turns (1 for normal, 2 for restricted).
+        algo_cost (float): Cost used for pathfinding (priority zones get 0.9).
+        max_drones (int): Maximum drones that can occupy this zone.
+        connected_to (list[Zone]): List of adjacent zones (bidirectional).
+    """
     def __init__(
         self,
         name: str,
@@ -13,6 +32,16 @@ class Zone():
         y: int,
         attributes: str,
     ) -> None:
+        """Initialize a Zone instance.
+
+        Args:
+            name: Unique identifier for the zone.
+            is_start: True if this is the start zone.
+            is_end: True if this is the end zone.
+            x: X-coordinate of the zone.
+            y: Y-coordinate of the zone.
+            attributes: Raw metadata string from the map file.
+        """
         self.name = name
         self.is_start = is_start
         self.is_end = is_end
@@ -27,6 +56,18 @@ class Zone():
         self.connected_to: list[Zone] = []
 
     def set_data(self, l_dx: int, number_of_drones: int) -> None:
+        """Parse and validate zone metadata from the map file.
+
+        Extracts and validates zone type, color, and max_drones from the
+        attributes string. Raises Parsing_error for invalid metadata.
+
+        Args:
+            l_dx: Line number in the map file (for error reporting).
+            number_of_drones: Total drones for start/end zone capacity override.
+
+        Raises:
+            Parsing_error: If metadata is invalid, duplicated, or unknown.
+        """
         valid_zone_types = ["normal", "restricted", "priority", "blocked"]
         if self.attributes:
             splitted = (self.attributes).split()
@@ -101,6 +142,12 @@ class Zone():
                 self.max_drones = number_of_drones
 
     def get_dict(self) -> dict:
+        """Convert Zone to a dictionary representation.
+
+        Returns:
+            dict: Zone data with name, coordinates, type, color, capacity,
+                costs, connected zone names.
+        """
         return {
             "name": self.name,
             "is_start": self.is_start,
@@ -117,13 +164,36 @@ class Zone():
 
 
 class Conncetion():
+    """Represents a bidirectional connection between two zones.
+
+    Connections allow drones to move between zones. Each connection has a
+    maximum capacity for simultaneous traversal.
+
+    Attributes:
+        zone_from (Zone): The source zone.
+        zone_to (Zone): The destination zone.
+        attributes (str): Raw metadata string from the map file.
+        max_link_capacity (int): Maximum drones traversing simultaneously.
+    """
     def __init__(self, zone_from: Zone, zone_to: Zone, attributes: str):
+        """Initialize a Connection instance.
+
+        Args:
+            zone_from: The source zone.
+            zone_to: The destination zone.
+            attributes: Raw metadata string from the map file.
+        """
         self.zone_from = zone_from
         self.zone_to = zone_to
         self.attributes = attributes
         self.max_link_capacity = 1
 
     def get_dict(self) -> dict:
+        """Convert Connection to a dictionary representation.
+
+        Returns:
+            dict: Connection data with source, destination, and capacity.
+        """
         return {
             "from": self.zone_from.name,
             "to": self.zone_to.name,
@@ -132,7 +202,26 @@ class Conncetion():
 
 
 class Drone:
+    """Represents a single drone in the simulation.
+
+    Drones have an ID, current position, planned path, and status.
+    Status can be: waiting, in_connection, or delivered.
+
+    Attributes:
+        id (int): Unique drone identifier.
+        current_zone (str | None): Name of the zone the drone is in.
+        path (list[str]): List of zones to visit (excluding current).
+        status (str): Drone state: "waiting", "in_connection", "delivered".
+        next_zone (str | None): Destination zone when in flight.
+        current_connection (tuple | None): Connection being traversed.
+    """
     def __init__(self, drone_id: int, start_zone: str):
+        """Initialize a Drone instance.
+
+        Args:
+            drone_id: Unique identifier for the drone.
+            start_zone: Name of the zone where the drone starts.
+        """
         self.id = drone_id
         self.current_zone: str | None = start_zone
         self.path: list[str] = []

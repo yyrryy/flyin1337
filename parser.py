@@ -4,14 +4,29 @@ from exceptions import Parsing_error
 
 
 class Parser():
+    """Parser for drone network map files.
+
+    Reads and validates map files, converting them into structured data
+    containing zones, connections, and drone count. Ensures the map format
+    complies with the specification.
+
+    Attributes:
+        nb_drones (int): Number of drones in the simulation.
+        zones (list[Zone]): List of parsed Zone objects.
+        connections (list[Connection]): List of parsed Connection objects.
+    """
     def __init__(self) -> None:
+        """Initialize an empty Parser instance."""
         self.nb_drones = 0
-        self.start = (0, 0)
-        self.end = (0, 0)
         self.zones: list[Zone] = []
         self.connections: list[Conncetion] = []
 
     def get_dict(self) -> dict:
+        """Convert parsed data to a dictionary representation.
+
+        Returns:
+            dict: Contains nb_drones, zones, and connections as dictionaries.
+        """
         return {
             "nb_drones": self.nb_drones,
             "zones": [i.get_dict() for i in self.zones],
@@ -19,6 +34,23 @@ class Parser():
         }
 
     def parse_data(self, file_content: list) -> None:
+        """Parse the map file content into zones and connections.
+
+        Validates the file format according to the specification, ensuring:
+        - First non-comment line is nb_drones
+        - Exactly one start_hub and one end_hub
+        - All zones have unique names (no dashes or spaces)
+        - All connections reference existing zones
+        - No duplicate connections
+        - At least one connection from start and one to end
+
+        Args:
+            file_content: List of lines from the map file.
+
+        Raises:
+            Parsing_error: If the file format is invalid, contains duplicates
+                , or references non-existent zones.
+        """
         # flags to track if we already got start and end zone
         # to avoid duplication
         has_content = False
@@ -237,6 +269,24 @@ class Parser():
         attributes: str,
         l_dx: int
     ) -> Conncetion:
+        """Create a bidirectional connection between two zones.
+
+        Validates that the connection doesn't already exist (in either direction),
+        adds the connection to both zones' adjacency lists, and parses any
+        connection metadata.
+
+        Args:
+            zone_from_instence: The source Zone object.
+            zone_to_instence: The destination Zone object.
+            attributes: Metadata string (e.g., "max_link_capacity=5").
+            l_dx: Line number for error reporting.
+
+        Returns:
+            The created Connection object.
+
+        Raises:
+            Parsing_error: If the connection already exists or if metadata is invalid.
+        """
         one_ways_duplicate = next(
             (
                 connection for connection in self.connections

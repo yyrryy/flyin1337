@@ -7,10 +7,12 @@ class Path_finder:
             zones: list[dict],
             connections: list[dict]
     ) -> None:
-        """Initialize with the list of zone dicts from the parser.
+        """Initialize with the list of zone dicts
+        and list of connections dics from the parser.
 
         Args:
-            zones: List of zone dictionaries from Data.get_dict()
+            zones: List of zone dictionaries
+            connections: List of connections dictionaries
         """
         self.zones: dict[str, dict] = {zone["name"]: zone for zone in zones}
         self.connections: list[dict] = connections
@@ -21,7 +23,7 @@ class Path_finder:
             end: str,
             paths_needed: int
     ) -> list[list[str]]:
-        """Find all simple paths from start to end using iterative DFS.
+        """Find all simple paths from start to end using DFS.
 
         Args:
             start: Start zone name.
@@ -29,7 +31,7 @@ class Path_finder:
             paths_needed: Maximum number of paths to find.
 
         Returns:
-            List of paths, each path is a list of zone names, sorted by cost.
+            Best pats with tolerance with minimum cost
         """
         all_paths: list[list[str]] = []
         # Stack holds tuples of (current_node, path_so_far, visited_set)
@@ -57,21 +59,21 @@ class Path_finder:
             raise Algo_error("No path in this map")
         paths_with_cost = {}
         for path in all_paths:
-            paths_with_cost[tuple(path)] = self._path_cost(path)
+            paths_with_cost[tuple(path)] = self.algo_cost_of_path(path)
         min_cost = min(value for value in paths_with_cost.values())
         with open('paths.txt', 'w') as f:
             print(paths_with_cost, file=f)
-        tolerance = 1
+        tolerance = 2
         max_allowed_cost = min_cost + tolerance
         best_paths = []
         for key, value in paths_with_cost.items():
             if value <= max_allowed_cost:
                 best_paths.append(list(key))
-        # all_paths.sort(key=lambda p: (self._path_cost(p), len(p)))
+        # all_paths.sort(key=lambda p: (self.algo_cost_of_path(p), len(p)))
         # print('all_paths >>', all_paths)
         return best_paths
 
-    def _path_cost(self, path: list[str]) -> int:
+    def algo_cost_of_path(self, path: list[str]) -> int:
         """Calculate total cost of a path.
         Args:
             path: List of zone names (clean strings, no metadata).

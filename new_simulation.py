@@ -5,6 +5,24 @@ from rich import print
 
 
 class Simulation:
+    """Main simulation controller for drone routing.
+
+    The Simulation class manages all drones, zones, and connections,
+    processing turns until all drones reach the end zone. It handles
+    path assignment, movement execution, capacity constraints, and
+    colored terminal output.
+
+    Attributes:
+    nb_drones (int): Total number of drones in the simulation.
+    zones (dict[str, dict]): Zone configurations keyed by name.
+    connections (dict[tuple[str, str], dict]): Connection configs keyed by (from, to).
+    start_zone (str): Name of the start zone.
+    end_zone (str): Name of the end zone.
+    drones (list[Drone]): List of all drone objects.
+    turn (int): Current simulation turn number.
+    drones_in_zone (dict[str, int]): Count of drones in each zone.
+    drones_in_conn (dict[tuple[str, str], int]): Count of drones on each connection.
+    """
     def __init__(
         self,
         nb_drones: int,
@@ -13,6 +31,15 @@ class Simulation:
         start_zone: str,
         end_zone: str
     ):
+        """Initialize the simulation with map data.
+
+        Args:
+            nb_drones: Total number of drones in the simulation.
+            zones: List of zone dictionaries from the parser.
+            connections: List of connection dictionaries from the parser.
+            start_zone: Name of the start zone.
+            end_zone: Name of the end zone.
+        """
         self.nb_drones = nb_drones
         self.zones = {z["name"]: z for z in zones}
         self.connections: dict[tuple[str | None, str], dict] = {
@@ -29,6 +56,15 @@ class Simulation:
         self.drones_in_zone[start_zone] = nb_drones
 
     def assign_paths(self) -> None:
+        """Assign paths to all drones using round-robin distribution.
+
+        Finds all best paths from start to end using DFS, then distributes
+        them evenly among drones. The number of paths found is limited to the
+        number of drones.
+
+        Raises:
+            ValueError: If no path exists from start to end zone.
+        """
         pathfinder = Path_finder(
             list(self.zones.values()),
             list(self.connections.values())
@@ -38,8 +74,8 @@ class Simulation:
             self.end_zone,
             paths_needed=self.nb_drones
         )
-        # if not all_paths:
-        #     raise ValueError("No path found")
+        if not best_paths:
+            raise ValueError("No path found")
         # best_paths = all_paths[:2]
         # print('best_paths', best_paths)
         for i, drone in enumerate(self.drones):
@@ -47,6 +83,11 @@ class Simulation:
             drone.path = path[1:]
 
     def run(self) -> None:
+        """Run the main simulation loop.
+
+        Continues processing turns until all drones are delivered.
+        Prints the total number of turns taken upon completion.
+        """
         self.assign_paths()
         while not self.all_delivered():
             self.turn += 1
@@ -54,6 +95,17 @@ class Simulation:
         print(f"\nSimulation finished in {self.turn} turns")
 
     def print_with_colors(self, movement: str) -> str:
+        """Format a movement string with terminal colors using the rich library.
+
+        Supports standard colors, rainbow effect, and handles both zone and
+        connection movement formats.
+
+        Args:
+            movement: Movement string in format "D1-zone" or "D1-from-to".
+
+        Returns:
+            String of colored movement string with rich markup.
+        """
         def print_rainbow(text: str) -> str:
             colors = [
                 "red", "orange1", "yellow", "green", "blue", "indigo", "violet"
@@ -94,6 +146,8 @@ class Simulation:
             return (f"{drone}-{output_of_zone_from}-{output_of_zone_to}")
 
     def process_turn(self) -> None:
+        """Process a single simulation turn.
+        """
         # Reset connection usage for this turn
         for key in self.drones_in_conn:
             self.drones_in_conn[key] = 0
@@ -170,6 +224,7 @@ class Simulation:
             else:
                 # Normal or priority - immediate arrival
                 self.drones_in_zone[from_zone] -= 1
+                self.drones_in_conn[conn_key] += 1
                 self.drones_in_zone[to_zone] += 1
                 drone.current_zone = to_zone
                 drone.path.pop(0)
@@ -185,4 +240,9 @@ class Simulation:
             print(' '.join(colored_movements))
 
     def all_delivered(self) -> bool:
+        """Check if all drones have reached the end zone.
+
+        Returns:
+            True if all drones are delivered, False otherwise.
+        """
         return all(d.status == "delivered" for d in self.drones)

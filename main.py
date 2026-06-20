@@ -6,6 +6,20 @@ from new_simulation import Simulation
 
 
 def main(filename: str) -> None:
+    """Run the drone simulation with the given map file.
+
+    Args:
+        filename: Path to the map file containing the drone network.
+
+    Raises:
+        FileNotFoundError: If the map file does not exist.
+        PermissionError: If the map file cannot be read.
+        Algo_error: If pathfinding fails (no path found).
+        Parsing_error: If the map file format is invalid.
+
+    Returns:
+        None: Exits with status code 0 on success, non-zero on failure.
+    """
     try:
         with open(filename) as file:
             file_content = file.readlines()
