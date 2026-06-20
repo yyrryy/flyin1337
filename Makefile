@@ -1,10 +1,10 @@
 MAP?=map.txt
 
-run:
-	uv run python3 main.py $(MAP)
-
 install:
 	uv sync
+
+run:
+	uv run python3 main.py $(MAP)
 
 debug:
 	uv run python3 -m pdb main.py $(MAP)

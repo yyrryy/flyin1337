@@ -37,7 +37,8 @@ class Zone():
                 attr_pattern = re.compile(r'^([a-z_]+)=([^=\s]+)$')
                 valid_attribute = attr_pattern.match(i)
                 if not valid_attribute:
-                    raise Parsing_error(f"Not a valid metadata, line {l_dx}")
+                    msg = f"Not a valid metadata for zone, line {l_dx}"
+                    raise Parsing_error(msg)
                 key, val = valid_attribute.group(1), valid_attribute.group(2)
                 if key == "color":
                     if color_catched:
@@ -121,7 +122,6 @@ class Conncetion():
         self.zone_to = zone_to
         self.attributes = attributes
         self.max_link_capacity = 1
-        self.data: dict = {}
 
     def get_dict(self) -> dict:
         return {

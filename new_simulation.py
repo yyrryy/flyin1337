@@ -97,10 +97,9 @@ class Simulation:
         # Reset connection usage for this turn
         for key in self.drones_in_conn:
             self.drones_in_conn[key] = 0
-        # STEP 1: Arrivals (in_connection drones land)
         movements = []
-        # STEP 2: Collect and execute movements
         for drone in self.drones:
+            # handle the flying drones first
             if drone.status == "in_connection":
                 to_zone_instence = self.zones[drone.next_zone]
                 # if drone.next_zone != self.end_zone:
@@ -109,20 +108,25 @@ class Simulation:
                 #     >= to_zone_instence["max_drones"]
                 # ):
                 #     continue
+                if drone.current_connection is None:
+                    continue
                 conn_instance_ = (
                     self.connections.get(drone.current_connection)
                 )
+                if conn_instance_ is None:
+                    continue
                 if conn_instance_:
-                    self.drones_in_conn[drone.current_connection] -= 1
-                # Arrive at destination (SILENT - no output)
-                # self.drones_in_zone[drone.current_zone] -= 1
+                    if self.drones_in_conn[drone.current_connection] > 0:
+                        self.drones_in_conn[drone.current_connection] -= 1
                 drone.current_zone = drone.next_zone
-                drone.status = "waiting"
+                if drone.current_zone == self.end_zone:
+                    drone.status = "delivered"
+                else:
+                    drone.status = "waiting"
                 movements.append(f"D{drone.id}-{drone.next_zone}")
-                # Remove from path (the zone we just arrived at)
+                # remove from path (the zone we just arrived at)
                 if drone.path and drone.path[0] == drone.next_zone:
                     drone.path.pop(0)
-                # Clear in_connection info
                 drone.next_zone = None
                 drone.current_connection = None
                 continue
@@ -137,26 +141,18 @@ class Simulation:
             conn_instance: dict | None = self.connections.get(conn_key)
             if conn_instance is None:
                 continue
-            # if not conn_instance:
-            #     continue
-            # Check connection capacity
             if (
                 self.drones_in_conn[conn_key] >=
                 conn_instance["max_link_capacity"]
             ):
-                continue  # Connection busy, drone waits
-
-            # Check zone capacity (end zone has no limit)
+                continue
             if to_zone != self.end_zone:
                 if (
                     self.drones_in_zone[to_zone] >=
                     to_zone_instence["max_drones"]
                 ):
-                    continue  # Zone full, drone waits
-            # ALL CHECKS PASSED - DRONE CAN MOVE
-            # Remove from current zone
-            # self.drones_in_zone[from_zone] -= 1
-            # Handle different zone types
+                    continue
+            # handle the next zone is restricted
             if to_zone_instence["zone_type"] == "restricted":
                 if to_zone != self.end_zone:
                     if (
@@ -164,7 +160,6 @@ class Simulation:
                         to_zone_instence["max_drones"]
                     ):
                         continue
-                # 2-turn movement
                 drone.status = "in_connection"
                 self.drones_in_conn[conn_key] += 1
                 self.drones_in_zone[to_zone] += 1
@@ -182,16 +177,12 @@ class Simulation:
                 # Check if delivered
                 if to_zone == self.end_zone:
                     drone.status = "delivered"
-                    # self.drones_in_zone[to_zone].remove(drone.id)
-        # STEP 3: Output
         if movements:
-            # print(' '.join(movements))
             colored_movements = [
                 self.print_with_colors(movement)
                 for movement in movements
             ]
             print(' '.join(colored_movements))
-            #     self.print_with_colors(i)
 
     def all_delivered(self) -> bool:
         return all(d.status == "delivered" for d in self.drones)

@@ -49,9 +49,9 @@ class Parser():
                     if c == '#':
                         break
                     stripped_line += c
-                stripped_line = stripped_line.strip().lower()
+                stripped_line = stripped_line.strip()
             else:
-                stripped_line = raw_line.lower()
+                stripped_line = raw_line
             nb_drones_pattern = r'^nb_drones:\s+([-?\d.]+)?$'
             start_hub_pattern = (
                 r'^start_hub:\s+'
@@ -72,11 +72,21 @@ class Parser():
                 r'^connection:\s+'
                 r'([^\s]+)(?:\s+\[([^\]]*)\])?$'
             )
-            nb_drones_match = re.match(nb_drones_pattern, stripped_line)
-            start = re.match(start_hub_pattern, stripped_line)
-            end = re.match(end_hub_pattern, stripped_line)
-            hub = re.match(hub_pattern, stripped_line)
-            connection = re.match(connection_pattern, stripped_line)
+            nb_drones_match = re.match(
+                nb_drones_pattern, stripped_line, re.IGNORECASE
+            )
+            start = re.match(
+                start_hub_pattern, stripped_line, re.IGNORECASE
+            )
+            end = re.match(
+                end_hub_pattern, stripped_line, re.IGNORECASE
+            )
+            hub = re.match(
+                hub_pattern, stripped_line, re.IGNORECASE
+            )
+            connection = re.match(
+                connection_pattern, stripped_line, re.IGNORECASE
+            )
             # print(" >>>>>>", nb_drones_match)
             # enforce the first line to be the number of drones
             if not nb_drones_found and not nb_drones_match:
@@ -253,12 +263,14 @@ class Parser():
             )
             # connection_instence.data[""]
             if attributes:
-                attr_pattern = re.compile(r'(\w+)=([^=\s\]]+)')
+                attr_pattern = re.compile(r'(\w+)=([^=\s\]]+)$')
                 valid_attribute = attr_pattern.match(attributes)
+                expected = "max_link_capacity is expected"
                 if not valid_attribute:
-                    raise Parsing_error(f"Not a valid metadata, line {l_dx}")
+                    msg = f"Invalid metadata for connection, line {l_dx}, {expected}"
+                    raise Parsing_error(msg)
                 key, val = valid_attribute.group(1), valid_attribute.group(2)
-                if key == "max_link_capacity":
+                if key.lower() == "max_link_capacity":
                     try:
                         capacity = int(val)
                         if capacity < 1:
@@ -270,6 +282,9 @@ class Parser():
                         msg = "Invalid max_link_capacity value"
                         msg += f" '{val}', line {l_dx}"
                         raise Parsing_error(msg)
+                else:
+                    msg = f"Invalid metadata for connection, line {l_dx}, {expected}"
+                    raise Parsing_error(msg)
                     # Add other connection attributes here if needed
             # else, means no attributes providedm do the defaults:
             else:

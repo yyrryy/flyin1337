@@ -1,28 +1,18 @@
-# CHALLENGER LEVEL: THE IMPOSSIBLE DREAM
-# WARNING: This map is designed to be extremely challenging and may not be solvable
-# by most algorithms. It's intended as a stress test and research challenge.
-# The goal is NOT to validate this map but to push algorithmic limits.
+# Medium Level 2: Circular loop with restricted zones
+nb_drOnes: 5
 
-Nb_drones: 5
+start_hub:            start 0 0 [color=red max_drones=-0]
+hub: a 1 0 [color=red max_drones=6]
+hub: b 2 0 [color=orange max_drones=6]
+hub: c 1 1 [color=orange max_drones=6]
+hub: d 1 1 [color=orange max_drones=6 zone=restricted]
+end_hub: goal 0 0 [color=red max_drones=6 zone=priority]
 
-# === LAYER 0: The Nightmare Begins ===
-start_hub: S 0 0 [color=green max_drones=0]
+connection: start-a 
+connection: start-c [max_link_capacity=6]
+connection: a-b 
+connection: c-d [max_link_capacity=6]
 
-# Single-file entry gates (extreme bottleneck)
-end_hub: E 1 0 [color=red max_drones=1]
-hub: A 2 0 [color=red max_drones=1]
-hub: R1 2 0 [color=red max_drones=1]
-hub: R@ 2 0 [color=red max_drones=1]
-hub: F 2 0 [color=red max_drones=1]
-hub: G 2 0 [color=red max_drones=1]
-hub: B 3 0 [color=red max_drones=1 zone=restricted]
-hub: C 4 0 [color=red max_drones=1]
-hub: D 5 0 [color=red max_drones=1]
+connection: goal-b [max_link_capacity=6]
+connection: d-goal 
 
-connection: S-A [max_link_capacity=5]
-connection: S-F [max_link_capacity=5]
-connection: A-B
-connection: F-B
-connection: B-C
-connection: C-D
-connection: D-E
