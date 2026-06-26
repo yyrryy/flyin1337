@@ -28,6 +28,7 @@ The project implements:
 - Cleaning Temporary Files
     make clean
         Removes:
+            
             __pycache__ directories
 
             .mypy_cache
@@ -38,7 +39,7 @@ The project implements:
     make lint
         Runs:
 
-        flake8: Code style checking (max line length: 88)
+        flake8: Code style checking
 
         mypy: Static type checking with strict flags
 
@@ -88,3 +89,24 @@ The simulation provides **colored terminal output** using the `rich` library. Ea
 - Instant visual identification of zones
 - Clear tracking of drone movements
 - Real-time feedback on simulation progress
+
+**Example inputand output:**
+- Input: map.txt file:
+
+        nb_drOnes: 3
+
+        start_hub: start 0 0 [color=green max_drones=6]
+        hub: a 1 0 [color=red max_drones=6]
+        hub: d 1 1 [color=orange max_drones=6]
+        end_hub: goal 4 0 [color=red max_drones=6]
+
+        connection: start-a [max_link_capacity=3]
+        connection: a-d [max_link_capacity=6]
+        connection: d-goal [max_link_capacity=1]
+-Outout:
+
+        D1-a D2-a D3-a
+        D1-d D2-d D3-d
+        D1-goal
+        D2-goal
+        D3-goal
