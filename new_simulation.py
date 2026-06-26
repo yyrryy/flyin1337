@@ -107,6 +107,13 @@ class Simulation:
             String of colored movement string with rich markup.
         """
         def print_rainbow(text: str) -> str:
+            """Handles the rainbow effect
+            Args:
+                text: Movement string in format "D1-zone" or "D1-from-to".
+
+            Returns:
+                String of colored movement string with rich markup.
+            """
             colors = [
                 "red", "orange1", "yellow", "green", "blue", "indigo", "violet"
             ]

@@ -122,7 +122,7 @@ class Parser():
             # print(" >>>>>>", nb_drones_match)
             # enforce the first line to be the number of drones
             if not nb_drones_found and not nb_drones_match:
-                msg = "the first line should be the number of drones"
+                msg = "the first not commented line should be the number of drones"
                 raise Parsing_error(msg)
             # skip empty lines
             if nb_drones_match:
