@@ -2,7 +2,7 @@
 import sys
 from parser import Parser
 from exceptions import Parsing_error, Algo_error
-from new_simulation import Simulation
+from new_simulationlivecoding import Simulation
 
 
 def main(filename: str) -> None:

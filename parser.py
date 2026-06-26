@@ -84,20 +84,20 @@ class Parser():
                 stripped_line = stripped_line.strip()
             else:
                 stripped_line = raw_line
-            nb_drones_pattern = r'^nb_drones:\s+([-?\d.]+)?$'
+            nb_drones_pattern = r'^nb_drones:\s+([+-]?\d+)?$'
             start_hub_pattern = (
                 r'^start_hub:\s+'
-                r'([^\s]+)\s+(-?\d+)\s+(-?\d+)'
+                r'([^\s]+)\s+([+-]?\d+)\s+([+-]?\d+)'
                 r'(?:\s+\[([^\]]*)\])?$'
             )
             end_hub_pattern = (
                 r'^end_hub:\s+'
-                r'([^\s]+)\s+(-?\d+)\s+(-?\d+)'
+                r'([^\s]+)\s+([+-]?\d+)\s+([+-]?\d+)'
                 r'(?:\s+\[([^\]]*)\])?$'
             )
             hub_pattern = (
                 r'^hub:\s+([^\s]+)\s+'
-                r'(-?\d+)\s+(-?\d+)'
+                r'([+-]?\d+)\s+([+-]?\d+)'
                 r'(?:\s+\[([^\]]*)\])?$'
             )
             connection_pattern = (

@@ -124,17 +124,17 @@ class Simulation:
                 colored_text += f"[{color}]{char}[/]"
             return colored_text
         parts = movement.split('-')
-        if len(parts) == 2:
-            drone, zone = parts
+        if len(parts) == 3:
+            drone, zone, info = parts
             zone_color = self.zones[zone]["color"]
             if zone_color is None:
                 return movement
             if zone_color == "rainbow":
-                return f"{drone}-{print_rainbow(zone)}"
+                return f"{drone}-{print_rainbow(zone)}{info}"
             hex_color = webcolors.name_to_hex(zone_color)
-            return (f"{drone}-[{hex_color}]{zone}[/]")
+            return (f"{drone}-[{hex_color}]{zone}[/] {info}")
         else:
-            drone, zone_from, zone_to = parts
+            drone, zone_from, zone_to, info = parts
             zone_from_color = self.zones[zone_from]["color"]
             zone_to_color = self.zones[zone_to]["color"]
             if zone_from_color is None:
@@ -151,7 +151,7 @@ class Simulation:
             else:
                 hex_color_to = webcolors.name_to_hex(zone_to_color)
                 output_of_zone_to = f'[{hex_color_to}]{zone_to}[/]'
-            return (f"{drone}-{output_of_zone_from}-{output_of_zone_to}")
+            return (f"{drone}-{output_of_zone_from}-{output_of_zone_to} (*{info})")
 
     def process_turn(self) -> None:
         """Process a single simulation turn.
@@ -187,7 +187,8 @@ class Simulation:
                     drone.status = "waiting"
                 self.drones_in_zone[drone.current_zone] += 1
                 self.reserved_drones_in_zone[drone.current_zone] -= 1
-                movements.append(f"D{drone.id}-{drone.next_zone}")
+                info = f"{to_zone_instence['max_drones']}/{self.drones_in_zone[drone.current_zone]}"
+                movements.append(f"D{drone.id}-{drone.next_zone}-{info}")
                 # remove from path (the zone we just arrived at)
                 if drone.path and drone.path[0] == drone.next_zone:
                     drone.path.pop(0)
@@ -234,7 +235,8 @@ class Simulation:
                 self.drones_in_zone[from_zone] -= 1
                 drone.next_zone = to_zone
                 drone.current_connection = conn_key
-                movements.append(f"D{drone.id}-{from_zone}-{to_zone}")
+                info = f"{conn_instance['max_link_capacity']}/{self.drones_in_conn[conn_key]}"
+                movements.append(f"D{drone.id}-{from_zone}-{to_zone}-{info}")
             else:
                 # Normal or priority - immediate arrival
                 self.drones_in_zone[from_zone] -= 1
@@ -242,7 +244,8 @@ class Simulation:
                 self.drones_in_zone[to_zone] += 1
                 drone.current_zone = to_zone
                 drone.path.pop(0)
-                movements.append(f"D{drone.id}-{to_zone}")
+                info = f"{to_zone_instence['max_drones']}/{self.drones_in_zone[to_zone]}"
+                movements.append(f"D{drone.id}-{to_zone}-{info}")
                 # Check if delivered
                 if to_zone == self.end_zone:
                     drone.status = "delivered"

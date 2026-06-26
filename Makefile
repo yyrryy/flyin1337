@@ -14,7 +14,7 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 lint:
-	flake8 *.py --max-line-length=88 --extend-ignore=E203
+	flake8 *.py
 	mypy *.py --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 

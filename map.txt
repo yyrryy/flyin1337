@@ -1,12 +1,12 @@
-nb_drOnes: 3
+nb_drOnes: +5#hh
 
 start_hub: start 0 0 [color=green max_drones=6]
 hub: a 1 0 [color=red max_drones=6]
-hub: b 2 0 [color=orange max_drones=6]
-hub: d 1 1 [color=orange max_drones=6]
-end_hub: goal 4 0 [color=red max_drones=6]
+hub: b 2 0 [color=orange max_drones=6 zone=priority]
+hub: d 1 1 [color=orange max_drones=2]
+end_hub: goal 4 0 [color=red max_drones=1 zone=restricted]
 
-connection: start-a [max_link_capacity=3]
-connection: a-b [max_link_capacity=6]
+connection: start-a [max_link_capacity=6]
 connection: a-d [max_link_capacity=6]
 connection: d-goal [max_link_capacity=1]
+connection: b-goal [max_link_capacity=1]
