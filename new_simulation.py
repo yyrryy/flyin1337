@@ -81,7 +81,7 @@ class Simulation:
             paths_needed=self.nb_drones
         )
         if not best_paths:
-            raise ValueError("No path found")
+            raise ValueError("No path found in this map")
         # best_paths = all_paths[:2]
         # print('best_paths', best_paths)
         for i, drone in enumerate(self.drones):
