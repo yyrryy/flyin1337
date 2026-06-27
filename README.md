@@ -70,7 +70,9 @@ The system uses **iterative DFS** to find all possible paths from start to end, 
 
 Drones are assigned paths using **round-robin distribution** for load balancing across available routes. The iterative DFS approach avoids recursion limits and works efficiently on maps of any size.
 
-**Why DFS?** It finds ALL paths, enabling load balancing across multiple routes. **Why cost filtering?** Prevents drones from taking unnecessarily long detours. **Why round-robin?** Distributes drones evenly across paths to reduce congestion.
+**Why DFS?** It finds ALL needed paths, enabling load balancing across multiple routes. 
+**Why cost filtering?** Prevents drones from taking unnecessarily long detours.
+**Why round-robin?** Distributes drones evenly across paths to reduce congestion.
 
 ### Visual Representation
 The simulation provides **colored terminal output** using the `rich` library. Each zone displays in its assigned color from the map file, making it easy to identify zones visually.
@@ -93,20 +95,19 @@ The simulation provides **colored terminal output** using the `rich` library. Ea
 **Example inputand output:**
 - Input: map.txt file:
 
-        nb_drOnes: 3
+        nb_drones: 3
 
-        start_hub: start 0 0 [color=green max_drones=6]
-        hub: a 1 0 [color=red max_drones=6]
-        hub: d 1 1 [color=orange max_drones=6]
-        end_hub: goal 4 0 [color=red max_drones=6]
+        start_hub: start +0 0 [color=green max_drones=+4]
+        hub: a 1 0 [color=red max_drones=+6]
+        hub: d 1 1 [color=orange max_drones=3 zone=normal]
+        end_hub: goal 4 0 [color=red max_drones=1]
 
-        connection: start-a [max_link_capacity=3]
+        connection: start-a [max_link_capacity=6]
         connection: a-d [max_link_capacity=6]
-        connection: d-goal [max_link_capacity=1]
--Outout:
+        connection: d-goal [max_link_capacity=3]
+
+- Outout:
 
         D1-a D2-a D3-a
         D1-d D2-d D3-d
-        D1-goal
-        D2-goal
-        D3-goal
+        D1-goal D2-goal D3-goal

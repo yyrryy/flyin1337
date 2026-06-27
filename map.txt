@@ -1,14 +1,10 @@
-nb_drones: 3#ee
+nb_drones: 3
 
 start_hub: start +0 0 [color=green max_drones=+4]
-#start_hub: GH +0 0 [color=green max_drones=+4]
 hub: a 1 0 [color=red max_drones=+6]
-hub: b +1 0 [color=orange max_drones=6]
 hub: d 1 1 [color=orange max_drones=3 zone=normal]
 end_hub: goal 4 0 [color=red max_drones=1]
-#end_hub: goal 4 0 [color=red max_drones=1]
 
 connection: start-a [max_link_capacity=6]
 connection: a-d [max_link_capacity=6]
-connection: d-goal [max_link_capacity=1]
-connection: b-goal [max_link_capacity=1]
+connection: d-goal [max_link_capacity=3]
