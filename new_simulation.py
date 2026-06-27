@@ -15,13 +15,16 @@ class Simulation:
     Attributes:
     nb_drones (int): Total number of drones in the simulation.
     zones (dict[str, dict]): Zone configurations keyed by name.
-    connections (dict[tuple[str, str], dict]): Connection configs keyed by (from, to).
+    connections (dict[tuple[str, str], dict]):
+    Connection configs keyed by (from, to).
     start_zone (str): Name of the start zone.
     end_zone (str): Name of the end zone.
     drones (list[Drone]): List of all drone objects.
     turn (int): Current simulation turn number.
-    drones_in_zone (dict[str, int]): Count of drones in each zone.
-    drones_in_conn (dict[tuple[str, str], int]): Count of drones on each connection.
+    drones_in_zone (dict[str, int]):
+    Count of drones in each zone.
+    drones_in_conn (dict[tuple[str, str], int]):
+    Count of drones on each connection.
     """
     def __init__(
         self,
@@ -51,7 +54,9 @@ class Simulation:
         self.turn = 0
         self.drones_in_zone: dict = {name: 0 for name in self.zones}
         self.reserved_drones_in_zone: dict = {name: 0 for name in self.zones}
-        self.drones_in_conn: dict = {(c["from"], c["to"]): 0 for c in connections}
+        self.drones_in_conn: dict = {
+            (c["from"], c["to"]): 0 for c in connections
+        }
         for i in range(nb_drones):
             self.drones.append(Drone(i + 1, start_zone))
         self.drones_in_zone[start_zone] = nb_drones
@@ -96,7 +101,8 @@ class Simulation:
         print(f"\nSimulation finished in {self.turn} turns")
 
     def print_with_colors(self, movement: str) -> str:
-        """Format a movement string with terminal colors using the rich library.
+        """Format a movement string with terminal colors
+        using the rich library.
 
         Supports standard colors, rainbow effect, and handles both zone and
         connection movement formats.
@@ -107,10 +113,10 @@ class Simulation:
         Returns:
             String of colored movement string with rich markup.
         """
-        def print_rainbow(text: str) -> str:
+        def print_rainbow(zone: str) -> str:
             """Handles the rainbow effect
             Args:
-                text: Movement string in format "D1-zone" or "D1-from-to".
+                zone: name of zone.
 
             Returns:
                 String of colored movement string with rich markup.
@@ -118,11 +124,11 @@ class Simulation:
             colors = [
                 "red", "orange1", "yellow", "green", "blue", "indigo", "violet"
             ]
-            colored_text = ""
-            for i, char in enumerate(text):
+            colored_zone = ""
+            for i, char in enumerate(zone):
                 color = colors[i % len(colors)]
-                colored_text += f"[{color}]{char}[/]"
-            return colored_text
+                colored_zone += f"[{color}]{char}[/]"
+            return colored_zone
         parts = movement.split('-')
         if len(parts) == 2:
             drone, zone = parts
@@ -236,7 +242,6 @@ class Simulation:
                 drone.current_connection = conn_key
                 movements.append(f"D{drone.id}-{from_zone}-{to_zone}")
             else:
-                # Normal or priority - immediate arrival
                 self.drones_in_zone[from_zone] -= 1
                 self.drones_in_conn[conn_key] += 1
                 self.drones_in_zone[to_zone] += 1

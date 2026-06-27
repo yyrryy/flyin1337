@@ -63,7 +63,8 @@ class Zone():
 
         Args:
             l_dx: Line number in the map file (for error reporting).
-            number_of_drones: Total drones for start/end zone capacity override.
+            number_of_drones: Total drones for
+            start/end zone capacity override.
 
         Raises:
             Parsing_error: If metadata is invalid, duplicated, or unknown.
@@ -83,7 +84,8 @@ class Zone():
                 key, val = valid_attribute.group(1), valid_attribute.group(2)
                 if key == "color":
                     if color_catched:
-                        raise Parsing_error(f"Duplicated meta data, line: {l_dx}")
+                        msg = f"Duplicated meta data, line: {l_dx}"
+                        raise Parsing_error(msg)
                     if val == "rainbow":
                         self.color = val.lower()
                     else:
@@ -96,7 +98,8 @@ class Zone():
                     color_catched = True
                 elif key == "zone":
                     if zone_type_catched:
-                        raise Parsing_error(f"Duplicated meta data, line: {l_dx}")
+                        msg = f"Duplicated meta data, line: {l_dx}"
+                        raise Parsing_error(msg)
                     if val.lower() not in valid_zone_types:
                         msg = f"{val} is not a valid zone type, line {l_dx}"
                         raise Parsing_error(msg)
@@ -111,20 +114,26 @@ class Zone():
                         self.cost = 1
                         self.algo_cost = 1
                     elif val == "blocked":
+                        if self.is_start or self.is_end:
+                            msg = "Start or end zone cannot be blocked,"
+                            msg += f" line {l_dx}"
+                            raise Parsing_error(msg)
                         pass
                     else:
                         raise Parsing_error(f"Unknown zone type, line {l_dx}")
                     zone_type_catched = True
                 elif key == "max_drones":
                     if max_drones_catched:
-                        raise Parsing_error(f"Duplicated meta data, line: {l_dx}")
+                        msg = f"Duplicated meta data, line: {l_dx}"
+                        raise Parsing_error(msg)
                     try:
                         max_drones = int(val)
-                        if self.is_start or self.is_end:
-                            self.max_drones = number_of_drones
-                        elif max_drones < 1:
-                            msg = f"No drones provided, line: {l_dx}"
+                        if max_drones < 1:
+                            msg = f"""max drones must be a positive integer,
+line: {l_dx}"""
                             raise Parsing_error(msg)
+                        elif self.is_start or self.is_end:
+                            self.max_drones = number_of_drones
                         else:
                             self.max_drones = max_drones
                     except ValueError:

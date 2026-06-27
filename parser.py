@@ -122,7 +122,8 @@ class Parser():
             # print(" >>>>>>", nb_drones_match)
             # enforce the first line to be the number of drones
             if not nb_drones_found and not nb_drones_match:
-                msg = "the first not commented line should be the number of drones"
+                msg = "the first not commented line should be the " \
+                      "number of drones"
                 raise Parsing_error(msg)
             # skip empty lines
             if nb_drones_match:
@@ -147,7 +148,8 @@ class Parser():
                     msg = f"Zone name can't have dashes or spaces, line:{l_dx}"
                     raise Parsing_error(msg)
                 if start_flag:
-                    message = f"{name} already existed, Error in line {l_dx}"
+                    message = "Start zone already existed, "
+                    message += f"line {l_dx}"
                     raise Parsing_error(message)
                 start_flag = True
                 try:
@@ -158,6 +160,16 @@ class Parser():
                     y = int(start.group(3))
                 except ValueError:
                     raise Parsing_error(f'{y} is not a valid coordination')
+                same_coordination = next(
+                    (
+                        z for z in self.zones if int(z.x) == x
+                        and int(z.y) == y
+                    ), None
+                )
+                if same_coordination:
+                    msg = f"Zone {same_coordination.name} already exists"
+                    msg += f" at the same coordination, line {l_dx}"
+                    raise Parsing_error(msg)
                 attributes = start.group(4)
                 zone = Zone(name, True, False, x, y, attributes)
                 zone.set_data(l_dx, nbr_of_drones)
@@ -169,7 +181,7 @@ class Parser():
                     msg = f"Zone name can't have dashes or spaces, line:{l_dx}"
                     raise Parsing_error(msg)
                 if end_flag:
-                    message = f"{name} already existed, Error in line {l_dx}"
+                    message = f"End zone already existed,line {l_dx}"
                     raise Parsing_error(message)
                 end_flag = True
                 try:
@@ -180,6 +192,16 @@ class Parser():
                     y = int(end.group(3))
                 except ValueError:
                     raise Parsing_error(f'{y} is not a valid coordination')
+                same_coordination = next(
+                    (
+                        z for z in self.zones if int(z.x) == x
+                        and int(z.y) == y
+                    ), None
+                )
+                if same_coordination:
+                    msg = f"Zone {same_coordination.name} already exists"
+                    msg += f" at the same coordination, line {l_dx}"
+                    raise Parsing_error(msg)
                 attributes = end.group(4)
                 zone = Zone(name, False, True, x, y, attributes)
                 zone.set_data(l_dx, nbr_of_drones)
@@ -198,6 +220,16 @@ class Parser():
                     y = int(hub.group(3))
                 except ValueError:
                     raise Parsing_error(f'{y} is not a valid coordination')
+                same_coordination = next(
+                    (
+                        z for z in self.zones if int(z.x) == x
+                        and int(z.y) == y
+                    ), None
+                )
+                if same_coordination:
+                    msg = f"Zone {same_coordination.name} already exists"
+                    msg += f" at the same coordination, line {l_dx}"
+                    raise Parsing_error(msg)
                 attributes = hub.group(4)
                 zone_exist = next(
                     (
@@ -248,11 +280,13 @@ class Parser():
                     "start_hub: (name) (x) (y) [optional metadata]\n"
                     "hub: (name) (x) (y) [optional metadata]\n"
                     "end_hub: (name) (x) (y) [optional metadata]\n"
-                    "connection: (zone_from)-(zone_target)[optional metadata]\n"
+                    "connection: (zone_from)-(zone_target)"
+                    "[optional metadata]\n"
                     "Ordering is not important\n"
                     "white spaces are allowed"
                 )
-                raise Parsing_error(f"Invalid format, line: {l_dx}, {expected}")
+                msg = f"Invalid format, line: {l_dx}, {expected}"
+                raise Parsing_error(msg)
         if not start_flag:
             raise Parsing_error("start hub does not exist")
         if not end_flag:
@@ -271,7 +305,8 @@ class Parser():
     ) -> Conncetion:
         """Create a bidirectional connection between two zones.
 
-        Validates that the connection doesn't already exist (in either direction),
+        Validates that the connection doesn't already
+        exist (in either direction),
         adds the connection to both zones' adjacency lists, and parses any
         connection metadata.
 
@@ -285,7 +320,8 @@ class Parser():
             The created Connection object.
 
         Raises:
-            Parsing_error: If the connection already exists or if metadata is invalid.
+            Parsing_error: If the connection already
+            exists or if metadata is invalid.
         """
         one_ways_duplicate = next(
             (
@@ -317,7 +353,8 @@ class Parser():
                 valid_attribute = attr_pattern.match(attributes)
                 expected = "max_link_capacity is expected"
                 if not valid_attribute:
-                    msg = f"Invalid metadata for connection, line {l_dx}, {expected}"
+                    msg = f"""Invalid metadata for connection,
+                    line {l_dx}, {expected}"""
                     raise Parsing_error(msg)
                 key, val = valid_attribute.group(1), valid_attribute.group(2)
                 if key.lower() == "max_link_capacity":
@@ -333,7 +370,8 @@ class Parser():
                         msg += f" '{val}', line {l_dx}"
                         raise Parsing_error(msg)
                 else:
-                    msg = f"Invalid metadata for connection, line {l_dx}, {expected}"
+                    msg = f"""Invalid metadata for connection,
+                    line {l_dx}, {expected}"""
                     raise Parsing_error(msg)
                     # Add other connection attributes here if needed
             # else, means no attributes providedm do the defaults:

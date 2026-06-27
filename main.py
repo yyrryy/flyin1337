@@ -2,7 +2,7 @@
 import sys
 from parser import Parser
 from exceptions import Parsing_error, Algo_error
-from new_simulationlivecoding import Simulation
+from new_simulation import Simulation
 
 
 def main(filename: str) -> None:
@@ -54,8 +54,9 @@ def main(filename: str) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    args = [i for i in sys.argv]
+    if len(args) < 2:
         print("Usage: python main.py <map_file>", file=sys.stderr)
         sys.exit(1)
-    map_file = sys.argv[1]
+    map_file = args[1]
     main(map_file)
